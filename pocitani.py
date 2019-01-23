@@ -7,13 +7,14 @@ class Application(tk.Frame):
         super().__init__(master)
         self.master = master
         self.master.title('Pocitani pro ZS')
-        self.master.geometry('300x150')
+        self.master.geometry('300x100')
         self.grid()
 
         self.options = '+-/*'
         self.status = [0, 0]
 
         self.gui()
+        self.novy_priklad()
 
     def gui(self):
         #popisek
@@ -42,28 +43,39 @@ class Application(tk.Frame):
 
         #spravnost
         self.var_spravnost = tk.StringVar()
-        self.spravnost_update()
+        self.uprav_status()
         self.spravnost = tk.Label(self.master, textvariable=self.var_spravnost)
-        self.grid(row=2, column=1)
+        self.spravnost.grid(row=2, column=1)
 
     def reset_vseho(self, event):
         self.status = [0, 0]
-        self.spravnost_update()
+        self.uprav_status()
         self.novy_priklad()
 
-
-    def potvrzeni_vysledku(self, event):
-        if int(self.var_vysledek) == self.vysledek:
-            self.status[0] = self.status[0] + 1
-
-        self.status[1] = self.status[1] + 1
-        self.spravnost_update()
-
-    def spravnost_update(self):
+    def uprav_status(self, event='reset'):
+        if event == 'spravne':
+            self.status[0] += 1
+            self.status[1] += 1
+        elif event == 'spatne':
+            self.status[1] += 1
+        elif event == 'reset':
+            self.status = [0, 0]
         spravnost = ' {0} / {1} '.format(self.status[0], self.status[1])
         self.var_spravnost.set(spravnost)
 
+    def potvrzeni_vysledku(self, event):
+        try:
+            if int(self.var_vysledek.get()) == self.vysledek:
+                self.uprav_status('spravne')
+            else:
+                self.uprav_status('spatne')
+            self.novy_priklad()
+        except:
+            self.var_vysledek.set('')
+            print('Neplatne cislo.. ')
+
     def novy_priklad(self):
+        self.var_vysledek.set('')
         znamenka = list(self.var_znamenka.get())
         new_znamenka = []
         for znamenko in znamenka:
@@ -93,11 +105,12 @@ class Application(tk.Frame):
             vysledek = a * b
 
         elif nahodny_vyber == '/':
-            a = random.randint(0, 100)
-            b = random.randint(0, 100)
-            vysledek = a + b
+            a = random.randint(0, 10)
+            b = random.randint(1, 10)
+            a = a * b
+            vysledek = a / b
 
-        self.var_priklad.set(' {0} {1} {2} '.format(a, nahodny_vyber, b))
+        self.var_priklad.set(' {0} {1} {2} = '.format(a, nahodny_vyber, b))
         self.vysledek = vysledek
 
 master = tk.Tk()
