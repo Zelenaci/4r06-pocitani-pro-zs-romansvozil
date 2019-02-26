@@ -70,7 +70,7 @@ class Application(tk.Frame):
             else:
                 self.uprav_status('spatne')
             self.novy_priklad()
-        except:
+        except ValueError:
             self.var_vysledek.set('')
             print('Neplatne cislo.. ')
 
